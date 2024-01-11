@@ -180,42 +180,23 @@ def capture_subprocess_output(subprocess_args):
 
     return (success, output)
 
-def run_prof(fname, workload_dir, perfmon_dir, cmd, target, verbose):
+def run_prof(fname, profiler_options):
 
     fbase = os.path.splitext(os.path.basename(fname))[0]
 
     logging.debug("pmc file:", os.path.basename(fname))
 
-    # profile the app (run w/ custom config files for mi100)
-    if target == "mi100":
-        logging.info("RUNNING WITH CUSTOM METRICS")
-        success, output = capture_subprocess_output(
-            [
-                rocprof_cmd,
-                "-i",
-                fname,
-                "-m",
-                perfmon_dir + "/" + "metrics.xml",
-                "--timestamp",
-                "on",
-                "-o",
-                workload_dir + "/" + fbase + ".csv",
-                '"' + cmd + '"',
-            ]
-        )
-    else:
-        success, output = capture_subprocess_output(
-            [
-                rocprof_cmd,
-                "-i",
-                fname,
-                "--timestamp",
-                "on",
-                "-o",
-                workload_dir + "/" + fbase + ".csv",
-                '"' + cmd + '"',
-            ]
-        )
+    # standard rocprof options
+    default_options = [
+        "-i", fname
+    ]
+    options = default_options + profiler_options
+
+    # profile the app
+    success, output = capture_subprocess_output(
+        [ rocprof_cmd, "-i", fname ] + options
+    )
+
     # write rocprof output to logging
     logging.info(output)
 
