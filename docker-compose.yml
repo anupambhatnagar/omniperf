@@ -22,8 +22,8 @@ services:
     stdin_open: true
     tty: true
   db_mongo:
-    container_name: omniperf-mongo
-    image: omniperf-mongo
+    container_name: mongo
+    image: mongo
     restart: always
     environment:
       MONGO_INITDB_ROOT_USERNAME: temp
